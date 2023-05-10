@@ -1,5 +1,0 @@
-PIL
-numpy
-pyqt5
-pyqt5_tools
-matplotlib
