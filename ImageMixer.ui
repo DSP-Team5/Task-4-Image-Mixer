@@ -21,7 +21,8 @@
   </property>
   <property name="styleSheet">
    <string notr="true">*{
-font-family:century gothic;
+<!-- font-family:century gothic; -->
+font-family:sans-serif;
 font-size:15px
 }
 /*QSlider::groove:horizontal {
@@ -40,20 +41,20 @@ QSlider::handle:horizontal{background-color:#979797}
 ImageView{
 border-radius:100px;}
 QMainWindow{
-background-color: #C7D3FF;
+background-color: #f4cccc;
 }
 QComboBox{
 background-color:white;
 border-top:none;}
 QMenu{
-background-color:#BCD0FF;
+background-color:#d9d2e9;
 }
 QLabel{
 font-size:18px}
-QLabel#label{font-size:26px; text-decoration:underline;}
-QLabel#label_2{font-size:26px; text-decoration:underline;}
-QLabel#label_3{font-size:26px; text-decoration:underline;}
-QLabel#label_4{font-size:26px;  text-decoration:underline;}
+QLabel#label{font-size:26px; }
+QLabel#label_2{font-size:26px; }
+QLabel#label_3{font-size:26px; }
+QLabel#label_4{font-size:26px; }
 </string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -74,7 +75,7 @@ QLabel#label_4{font-size:26px;  text-decoration:underline;}
        <item row="1" column="0" alignment="Qt::AlignHCenter">
         <widget class="QLabel" name="label_4">
          <property name="text">
-          <string>OutPut 1</string>
+          <string>Output 1</string>
          </property>
         </widget>
        </item>
@@ -84,7 +85,7 @@ QLabel#label_4{font-size:26px;  text-decoration:underline;}
        <item row="1" column="1" alignment="Qt::AlignHCenter">
         <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>OutPut 2</string>
+          <string>Output 2</string>
          </property>
         </widget>
        </item>
@@ -162,7 +163,7 @@ QLabel#label_4{font-size:26px;  text-decoration:underline;}
        <item row="1" column="0" alignment="Qt::AlignHCenter">
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>First Image</string>
+          <string>Image 1</string>
          </property>
         </widget>
        </item>
@@ -449,7 +450,7 @@ QLabel#label_4{font-size:26px;  text-decoration:underline;}
        <item row="1" column="0" alignment="Qt::AlignHCenter">
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>Second Image</string>
+          <string>Image 2</string>
          </property>
         </widget>
        </item>
@@ -493,7 +494,7 @@ QLabel#label_4{font-size:26px;  text-decoration:underline;}
   <widget class="QStatusBar" name="statusbar"/>
   <action name="openFirstImg">
    <property name="text">
-    <string>Add First Image</string>
+    <string>Image 1</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+1</string>
@@ -501,7 +502,7 @@ QLabel#label_4{font-size:26px;  text-decoration:underline;}
   </action>
   <action name="openSecondImg">
    <property name="text">
-    <string>Add Second Image</string>
+    <string>Image 2</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+2</string>
