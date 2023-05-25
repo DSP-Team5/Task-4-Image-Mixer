@@ -47,115 +47,90 @@ class ImageModel():
         return the magnitude of ifft of the mix
         return type ---> 2D numpy array
         """
+
         w1 = magnitudeOrRealRatio
         w2 = phaesOrImaginaryRatio
         mixInverse = None
 
-        if mode == 'MagnitudeAndPhase':
-            print("Mixing Magnitude and Phase")
-            M1 = self.magnitude
-            M2 = imageToBeMixed.magnitude
+        # Create a dictionary of the possible modes and their corresponding parameters.
+        modes = {
+            "MagnitudeAndPhase": {
+                "M1": self.magnitude,
+                "M2": imageToBeMixed.magnitude,
+                "P1": self.phase,
+                "P2": imageToBeMixed.phase,
+            },
+            "UniMagnitudeAndPhase": {
+                "M1": self.uniformMagnitude,
+                "M2": self.uniformMagnitude,
+                "P1": self.phase,
+                "P2": imageToBeMixed.phase,
+            },
+            "PhaseAndMagnitude": {
+                "M1": self.magnitude,
+                "M2": imageToBeMixed.magnitude,
+                "P1": self.phase,
+                "P2": imageToBeMixed.phase,
+            },
+            "PhaseAndUniMagnitude": {
+                "M1": self.uniformMagnitude,
+                "M2": self.uniformMagnitude,
+                "P1": self.phase,
+                "P2": imageToBeMixed.phase,
+            },
+            "UniPhaseAndMagnitude": {
+                "M1": self.magnitude,
+                "M2": imageToBeMixed.magnitude,
+                "P1": self.uniformPhase,
+                "P2": self.uniformPhase,
+            },
+            "MagnitudeAndUniPhase": {
+                "M1": self.magnitude,
+                "M2": imageToBeMixed.magnitude,
+                "P1": self.uniformPhase,
+                "P2": self.uniformPhase,
+            },
+            "RealAndImaginary": {
+                "R1": self.real,
+                "R2": imageToBeMixed.real,
+                "I1": self.imaginary,
+                "I2": imageToBeMixed.imaginary,
+            },
+            "ImaginaryAndReal": {
+                "R1": self.real,
+                "R2": imageToBeMixed.real,
+                "I1": self.imaginary,
+                "I2": imageToBeMixed.imaginary,
+            },
+        }
 
-            P1 = self.phase
-            P2 = imageToBeMixed.phase
+        # Get the parameters for the current mode.
+        parameters = modes[mode]
 
-            magnitudeMix = w1*M1 + (1-w1)*M2
-            phaseMix = (1-w2)*P1 + w2*P2
+        # Calculate the magnitude mix.
+        if mode in ["MagnitudeAndPhase", "UniMagnitudeAndPhase"]:
+            magnitudeMix = w1 * parameters["M1"] + (1-w1) * parameters["M2"]
+            phaseMix = (1-w2) * parameters["P1"] + w2 * parameters["P2"]
+            combined = magnitudeMix * np.exp(1j * phaseMix)
+        elif mode in ["UniPhaseAndMagnitude", "PhaseAndMagnitude"]:
+            magnitudeMix = (1-w2) * parameters["M1"] + w2 * parameters["M2"]
+            phaseMix = w1 * parameters["P1"] + (1 - w1) * parameters["P2"]
+            combined = magnitudeMix * np.exp(1j * phaseMix)
+        elif mode == "RealAndImaginary":
+            realMix = w1 * parameters["R1"] + (1 - w1) * parameters["R2"]
+            imaginaryMix = (1 - w2) * parameters["I1"] + w2 * parameters["I2"]
+            combined = realMix + imaginaryMix * 1j
+        else:
+            realMix = (1 - w2) * parameters["R1"] + w2 * parameters["R2"]
+            imaginaryMix = w1 * parameters["I1"] + (1 - w1) * parameters["I2"]
+            combined = realMix + imaginaryMix * 1j   
 
-            combined = np.multiply(magnitudeMix, np.exp(1j * phaseMix))
-            mixInverse = np.real(np.fft.ifft2(combined))
-        
-        elif mode == 'UniMagnitudeAndPhase':
-            print("Mixing uniformMagnitude and Phase")
-            M1 = self.uniformMagnitude
-
-            P1 = self.phase
-            P2 = imageToBeMixed.phase
-
-            magnitudeMix = M1
-            phaseMix = (1-w2)*P1 + w2*P2
-
-            combined = np.multiply(magnitudeMix, np.exp(1j * phaseMix))
-            mixInverse = np.real(np.fft.ifft2(combined))
-        
-        elif mode == 'PhaseAndMagnitude':
-            print("Mixing Phase and Magnitude")
-            M1 = self.magnitude
-            M2 = imageToBeMixed.magnitude
-
-            P1 = self.phase
-            P2 = imageToBeMixed.phase
-
-            magnitudeMix= (1-w2)*M1 + w2*M2
-            phaseMix = w1*P1  + (1-w1)*P2 
-
-            combined = np.multiply(magnitudeMix, np.exp(1j * phaseMix))
-            mixInverse = np.real(np.fft.ifft2(combined))
-       
-        elif mode == 'PhaseAndUniMagnitude':
-            M1 = self.uniformMagnitude 
-
-            P1 = self.phase
-            P2 = imageToBeMixed.phase
-
-            magnitudeMix=M1
-            phaseMix = w1*P1  + (1-w1)*P2 
-
-            combined = np.multiply(magnitudeMix, np.exp(1j * phaseMix))
-            mixInverse = np.real(np.fft.ifft2(combined))
-        
-        elif mode == 'UniPhaseAndMagnitude':
-            M1 = self.magnitude
-            M2 = imageToBeMixed.magnitude 
-
-            P1 = self.uniformPhase
             
 
-            magnitudeMix= (1-w2)*M1 + w2*M2
-            phaseMix = P1 
+        # Combine the magnitude and phase mixes.
+        
 
-            combined = np.multiply(magnitudeMix, np.exp(1j * phaseMix))
-            mixInverse = np.real(np.fft.ifft2(combined))
+        # Calculate the magnitude of the inverse Fourier transform.
+        mixInverse = np.real(np.fft.ifft2(combined))
 
-        elif mode == 'MagnitudeAndUniPhase':
-            print("Mixing Magnitude and UniPhase")
-            M1 = self.magnitude
-            M2 = imageToBeMixed.magnitude
-
-            P1 = self.uniformPhase
-
-            magnitudeMix = w1*M1 + (1-w1)*M2
-            phaseMix = P1
-
-            combined = np.multiply(magnitudeMix, np.exp(1j * phaseMix))
-            mixInverse = np.real(np.fft.ifft2(combined))
-                
-        elif mode == 'RealAndImaginary':
-            print("Mixing Real and Imaginary")
-            R1 = self.real
-            R2 = imageToBeMixed.real
-
-            I1 = self.imaginary
-            I2 = imageToBeMixed.imaginary
-
-            realMix = w1*R1 + (1-w1)*R2
-            imaginaryMix = (1-w2)*I1 + w2*I2
-
-            combined = realMix + imaginaryMix * 1j
-            mixInverse = np.real(np.fft.ifft2(combined))
-                
-        elif mode == 'ImaginaryAndReal':
-            print("Mixing Imaginary and Real")
-            R1 = self.real
-            R2 = imageToBeMixed.real
-
-            I1 = self.imaginary
-            I2 = imageToBeMixed.imaginary
-
-            realMix = (1-w2)*R1 + w2*R2
-            imaginaryMix = w1*I1+(1-w1)*I2
-
-            combined = realMix + imaginaryMix * 1j
-            mixInverse = np.real(np.fft.ifft2(combined))
-                  
         return abs(mixInverse)

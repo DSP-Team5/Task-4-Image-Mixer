@@ -28,12 +28,14 @@ logging.basicConfig(level=logging.INFO, filename="logging.log", format='%(asctim
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-MAIN_WINDOW,_=loadUiType(path.join(path.dirname(__file__),"ImageMixer.ui"))
 
-class MainApp(QMainWindow,MAIN_WINDOW):
-  
-    def __init__(self,parent=None):
-        super(MainApp,self).__init__(parent)
+MAIN_WINDOW, _ = loadUiType(path.join(path.dirname(__file__), "ImageMixer.ui"))
+
+class MainApp(QMainWindow, MAIN_WINDOW):
+    def __init__(self, parent=None):
+        super(MainApp, self).__init__(parent)
+        self.setupUi(self)
+
         QMainWindow.__init__(self)
         self.setupUi(self)
         self.menuBar()
@@ -152,35 +154,22 @@ class MainApp(QMainWindow,MAIN_WINDOW):
         logger.info('Component 1 is {} , component 2 is {}' . format(self.comboBox_4.currentText() , self.comboBox_5.currentText()))
         self.displayImage(mixInverse, self.OutputWindows[self.comboBox_3.currentText()])
        
-    def combobox_update (self,comp1,comp2):
+    def combobox_update(self, comp1, comp2):
         self.comboBox_7.clear()
         self.comboBox_7.addItem("Select A Component")
 
-        if  comp1=='Magnitude':
-            self.comboBox_7.addItem("Phase")
-            self.comboBox_7.addItem("UniPhase")
-            self.comboBox_7.setCurrentText(comp2)
-            
-        elif  comp1=='Phase':
-            self.comboBox_7.addItem("Magnitude")
-            self.comboBox_7.addItem("UniMagnitude")
-            self.comboBox_7.setCurrentText(comp2)
-            
-        elif  comp1=='UniMagnitude':
-            self.comboBox_7.addItem("Phase")
-            self.comboBox_7.setCurrentText(comp2)
-              
-        elif  comp1=='UniPhase':
-            self.comboBox_7.addItem("Magnitude")
-            self.comboBox_7.setCurrentText(comp2)
-            
-        elif  comp1=='Real':
-            self.comboBox_7.addItem("Imaginary")
-            self.comboBox_7.setCurrentText(comp2)
-             
-        elif  comp1=='Imaginary':
-            self.comboBox_7.addItem("Real")
-            self.comboBox_7.setCurrentText(comp2)
+        options = {
+            'Magnitude': ['Phase', 'UniPhase'],
+            'Phase': ['Magnitude', 'UniMagnitude'],
+            'UniMagnitude': ['Phase'],
+            'UniPhase': ['Magnitude'],
+            'Real': ['Imaginary'],
+            'Imaginary': ['Real']
+        }
+
+        self.comboBox_7.addItems(options.get(comp1, []))
+        self.comboBox_7.setCurrentText(comp2)
+
 
 
 def main():
