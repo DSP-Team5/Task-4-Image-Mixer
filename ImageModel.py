@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtCore, uic, QtGui, QtPrintSupport
 from pyqtgraph import PlotWidget, plot
 from PyQt5.uic import loadUiType
-from PyQt5.QtWidgets import *   
+from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from os import path
@@ -24,7 +24,7 @@ class ImageModel():
     A class that represents the ImageModel
     """
 
-    def __init__(self, imgPath: str,id):
+    def __init__(self, imgPath: str, id):
         """
         :param imgPath: absolute path of the image
         """
@@ -39,7 +39,8 @@ class ImageModel():
         self.phase = np.angle(self.fourier)
         self.uniformMagnitude = np.ones(self.img.shape)
         self.uniformPhase = np.zeros(self.img.shape)
-        self.component_list=[self.mag_spectrum,self.phase,self.real,self.imaginary]
+        self.component_list = [self.mag_spectrum,
+                               self.phase, self.real, self.imaginary]
 
     def mix(self, imageToBeMixed, magnitudeOrRealRatio, phaesOrImaginaryRatio, mode):
         """
@@ -55,52 +56,52 @@ class ImageModel():
         # Create a dictionary of the possible modes and their corresponding parameters.
         modes = {
             "MagnitudeAndPhase": {
-                "M1": self.magnitude,
-                "M2": imageToBeMixed.magnitude,
-                "P1": self.phase,
-                "P2": imageToBeMixed.phase,
+                "magnitude": self.magnitude,
+                "magnitude2": imageToBeMixed.magnitude,
+                "phase": self.phase,
+                "phase2": imageToBeMixed.phase,
             },
             "UniMagnitudeAndPhase": {
-                "M1": self.uniformMagnitude,
-                "M2": self.uniformMagnitude,
-                "P1": self.phase,
-                "P2": imageToBeMixed.phase,
+                "magnitude": self.uniformMagnitude,
+                "magnitude2": imageToBeMixed.uniformMagnitude,
+                "phase": self.phase,
+                "phase2": imageToBeMixed.phase,
             },
             "PhaseAndMagnitude": {
-                "M1": self.magnitude,
-                "M2": imageToBeMixed.magnitude,
-                "P1": self.phase,
-                "P2": imageToBeMixed.phase,
+                "magnitude": self.magnitude,
+                "magnitude2": imageToBeMixed.magnitude,
+                "phase": self.phase,
+                "phase2": imageToBeMixed.phase,
             },
             "PhaseAndUniMagnitude": {
-                "M1": self.uniformMagnitude,
-                "M2": self.uniformMagnitude,
-                "P1": self.phase,
-                "P2": imageToBeMixed.phase,
+                "magnitude": self.uniformMagnitude,
+                "magnitude2": imageToBeMixed.uniformMagnitude,
+                "phase": self.phase,
+                "phase2": imageToBeMixed.phase,
             },
             "UniPhaseAndMagnitude": {
-                "M1": self.magnitude,
-                "M2": imageToBeMixed.magnitude,
-                "P1": self.uniformPhase,
-                "P2": self.uniformPhase,
+                "magnitude": self.magnitude,
+                "magnitude2": imageToBeMixed.magnitude,
+                "phase": self.uniformPhase,
+                "phase2": imageToBeMixed.uniformPhase,
             },
             "MagnitudeAndUniPhase": {
-                "M1": self.magnitude,
-                "M2": imageToBeMixed.magnitude,
-                "P1": self.uniformPhase,
-                "P2": self.uniformPhase,
+                "magnitude": self.magnitude,
+                "magnitude2": imageToBeMixed.magnitude,
+                "phase": self.uniformPhase,
+                "phase2": imageToBeMixed.uniformPhase,
             },
             "RealAndImaginary": {
-                "R1": self.real,
-                "R2": imageToBeMixed.real,
-                "I1": self.imaginary,
-                "I2": imageToBeMixed.imaginary,
+                "real": self.real,
+                "real2": imageToBeMixed.real,
+                "imaginary": self.imaginary,
+                "imaginary2": imageToBeMixed.imaginary,
             },
             "ImaginaryAndReal": {
-                "R1": self.real,
-                "R2": imageToBeMixed.real,
-                "I1": self.imaginary,
-                "I2": imageToBeMixed.imaginary,
+                "real": self.real,
+                "real2": imageToBeMixed.real,
+                "imaginary": self.imaginary,
+                "imaginary2": imageToBeMixed.imaginary,
             },
         }
 
@@ -108,29 +109,22 @@ class ImageModel():
         parameters = modes[mode]
 
         # Calculate the magnitude mix.
-        if mode in ["MagnitudeAndPhase", "UniMagnitudeAndPhase"]:
-            magnitudeMix = w1 * parameters["M1"] + (1-w1) * parameters["M2"]
-            phaseMix = (1-w2) * parameters["P1"] + w2 * parameters["P2"]
+        if mode in ["MagnitudeAndPhase", "UniMagnitudeAndPhase", "PhaseAndMagnitude", "UniPhaseAndMagnitude"]:
+            magnitudeMix = w1 * \
+                parameters["magnitude"] + (1-w1) * parameters["magnitude2"]
+            phaseMix = (1-w2) * parameters["phase"] + w2 * parameters["phase2"]
             combined = magnitudeMix * np.exp(1j * phaseMix)
-        elif mode in ["UniPhaseAndMagnitude", "PhaseAndMagnitude"]:
-            magnitudeMix = (1-w2) * parameters["M1"] + w2 * parameters["M2"]
-            phaseMix = w1 * parameters["P1"] + (1 - w1) * parameters["P2"]
-            combined = magnitudeMix * np.exp(1j * phaseMix)
-        elif mode == "RealAndImaginary":
-            realMix = w1 * parameters["R1"] + (1 - w1) * parameters["R2"]
-            imaginaryMix = (1 - w2) * parameters["I1"] + w2 * parameters["I2"]
+        elif mode in ["RealAndImaginary", "ImaginaryAndReal"]:
+            realMix = w1 * parameters["real"] + (1 - w1) * parameters["real2"]
+            imaginaryMix = (
+                1 - w2) * parameters["imaginary"] + w2 * parameters["imaginary2"]
             combined = realMix + imaginaryMix * 1j
         else:
-            realMix = (1 - w2) * parameters["R1"] + w2 * parameters["R2"]
-            imaginaryMix = w1 * parameters["I1"] + (1 - w1) * parameters["I2"]
-            combined = realMix + imaginaryMix * 1j   
-
-            
-
-        # Combine the magnitude and phase mixes.
-        
+            raise ValueError("Invalid mode")
 
         # Calculate the magnitude of the inverse Fourier transform.
         mixInverse = np.real(np.fft.ifft2(combined))
 
         return abs(mixInverse)
+
+        # Get the parameters for the current mode.
